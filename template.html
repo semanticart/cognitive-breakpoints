@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+  <head>
+    <title>$title$</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        margin: 0;
+        padding: 2rem;
+        background-color: #0f172a;
+        color: #e2e8f0;
+        line-height: 1.6;
+        font-size: 1.6rem;
+      }
+
+      .mono {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+          Courier, monospace;
+      }
+
+      a {
+        color: #0ea5e9;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      a:visited {
+        color: #6366f1;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin: 1rem 0;
+      }
+
+      ul {
+        padding: 0 0 0 2rem;
+      }
+
+      article {
+        display: none;
+      }
+
+      div.sourceCode {
+        filter: invert(1);
+      }
+
+      $styles.html()$
+    </style>
+  </head>
+  <body>
+    <div id="slider">
+      Depth:
+      <input type="range" id="depth" min="1" value="1" />
+      <span class="mono"
+        ><span id="depth-value">1</span>/<span id="depth-max">1</span></span
+      >
+    </div>
+
+    $body$
+
+    <script>
+      const depth = document.getElementById("depth");
+      const h1s = document.querySelectorAll("h1");
+
+      h1s.forEach((h1, index) => {
+        // Create an article element to wrap content
+        const article = document.createElement("article");
+
+        // Insert the article before the h1
+        h1.parentNode.insertBefore(article, h1);
+
+        // Iterate over following siblings until the next h1 or end of body
+        let nextElem = h1.nextElementSibling;
+        while (nextElem && nextElem.tagName !== "H1") {
+          // Store current element to move
+          const currentElem = nextElem;
+          // Move to next sibling for next iteration
+          nextElem = currentElem.nextElementSibling;
+
+          // Move the current element into the article
+          article.appendChild(currentElem);
+        }
+
+        // Move the h1 into the article
+        article.insertBefore(h1, article.firstChild);
+      });
+
+      const articles = document.querySelectorAll("article");
+
+      depth.max = articles.length;
+      depth.value =
+        new URLSearchParams(window.location.search).get("depth") || 1;
+
+      document.getElementById("depth-max").textContent = depth.max;
+
+      const showArticle = (incomingIndex) => {
+        const index = parseInt(incomingIndex, 10);
+        Array.from(articles)
+          .reverse()
+          .forEach((article, i) => {
+            if (i + 1 === index) {
+              article.style.display = "block";
+            } else {
+              article.style.display = "none";
+            }
+          });
+        document.getElementById("depth-value").textContent = depth.value;
+      };
+
+      depth.addEventListener("input", (event) => {
+        articles.forEach((article, index) => {
+          showArticle(event.target.value);
+        });
+      });
+
+      showArticle(depth.value);
+    </script>
+  </body>
+</html>

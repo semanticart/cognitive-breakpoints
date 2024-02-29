@@ -1,0 +1,3 @@
+#!/bin/bash
+
+pandoc json-rpc.md --css= --highlight-style=pygments -o generated.html --template=template.html --metadata title="JSON-RPC"
